@@ -1,2 +1,2 @@
 # Playing-with-Assembly
-Testing Assembly programs
+Creating and testing general purpose Assembly programs

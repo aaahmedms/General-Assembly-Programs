@@ -1,0 +1,63 @@
+; ASM program that prompts the user to enter a string of at
+; most 128 characters and prints the corresponding ASCII value  of every character in the string.
+
+
+INCLUDE Irvine32.inc
+
+.data
+MAX = 128 
+prompt BYTE "Enter String of 128 characters: ",0
+prompt2 BYTE " ",0
+myStr BYTE MAX+1 DUP(?)
+strSize DWORD ?
+
+.code
+main PROC
+
+	;show prompt
+	mov  edx,OFFSET prompt	
+	call WriteString
+	call crlf
+	
+	;Read string
+	mov edx, OFFSET myStr
+	mov ecx, (SIZEOF myStr) - 1
+	call ReadString	
+	mov strSize, eax
+
+;print string in ASCII Hexadecimal
+	;reset counter to string size
+		mov ecx,0 
+	L1:	
+		cmp ecx,strSize  ;if(ecx < string size)
+		jae end_L1
+		movzx eax,myStr[ecx]
+		mov myStr[ecx],al	; store string
+		call WriteHex 		; ascii code for the character in the string in Decimal
+		mov  edx,OFFSET prompt2	;insert blank space
+		call WriteString
+		inc ecx
+		jmp L1 ;if condition still stands jump back to L1
+	end_L1:
+	
+	CALL CRLF ;new line
+
+;print string in ASCII Integer
+	;reset counter to string size
+		mov ecx,0 
+	L2:	
+		cmp ecx,strSize  ;if(ecx < string size)
+		jae end_L2  
+		movzx eax,myStr[ecx]
+		call WriteInt 		; ascii code for the character in the string in Decimal
+		mov  edx,OFFSET prompt2	;insert blank space
+		call WriteString
+		inc ecx
+		jmp L2 ;if condition still stands jump back to L2
+	end_L2:
+		
+		CALL CRLF ;new line
+		call DumpRegs
+	exit
+main ENDP
+END main

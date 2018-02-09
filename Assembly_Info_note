@@ -1,0 +1,335 @@
+BYTE 8 bit since 1 byte = 8 bits = 0000 0000
+TBYTE 80 bit
+
+WORD and SWORD 16 bit => 0000 0000 0000 0000
+DWORD and SDWORD 32 bit
+QWORD 64 bit
+
+s stands for signed, so first bit is a + or - sign
+
+count BYTE 50 ;1 byte of storage initialized to 50
+---------------------------------------------
+Calculating the Size of a Word Array
+
+
+Divide total number of bytes by 2 (the size of a word)
+
+list WORD 1000h,2000h,3000h,4000h
+
+ListSize = ($ - list) / 2	
+; ListSize is a constant
+
+
+Difference ($ - list) is the number of bytes
+
+Works for any type: BYTE, DWORD, QWORD, … etc
+
+
+
+-------------------------------------------------------
+The $ operator (current location counter) returns the offset 
+associated with the current program statement
+------------------------------------------------
+var4 BYTE 10,3 DUP(0),20	; 5 bytes
+
+Var5 BYTE 2 DUP( ‘a’ , 2 DUP ( ‘b’ ) ) ; 6 bytes : ‘abbabb’
+
+-------------------------------------------------------
+-The (offset) address of a variable is the address of its first 
+byte
+
+Ex: If the following data segment starts at address 0. 
+
+.data
+  
+Var1 BYTE “ABC”
+
+
+The address of Var1 is 0   =   the address of ‘A’ 
+--------------------------------------------------------
+EQU Directive
+
+-Data directivesDefine a symbol as either an integer or text expression.
+
+-Cannot be redefined
+
+
+.data
+PI    EQU <3.1416>	; text expression
+
+Mat1  EQU 10 * 10	; integer expression
+MSGE EQU <"Press any key to continue...",0>
+-----------------------------------------------------------
+TEXTEQU Directive
+
+
+-Defines a symbol as either an integer or text expression.
+-Can be redefined at any time
+
+
+.data
+continueMsg TEXTEQU <"Do you wish to continue (Y/N)?">
+count   TEXTEQU %(rowSize * 2)	; evaluates the integer expression
+  
+setupAL TEXTEQU <mov al,count>	; assigns text 
+
+.code
+  
+setupAL		; generates: "mov al,10"
+-------------------------------------------------------------
+mov
+-The MOV instruction never affects the flags.
+
+
+movzx
+movsx
+
+add
+-Both operands must be of the same size
+-source remains unchanged
+
+sub
+-Both operands must be of the same size
+-source remains unchanged
+
+mul
+
+neg
+-Reverses the sign of an operand.
+-2_complement
+
+inc , dec:
+-INC and DEC affect all status flags except the CF flag
+-only works on ax register
+
+
+XCHG:
+-At least one operand must be a register. 
+-No immediate operands are permitted.
+
+------------------------------------------------------------
+Direct-Offset Operands
+
+-We can add a displacement to a memory operand to access a 
+memory value without a name.
+
+.data
+arrayB  BYTE  10h,20h,30h,40h
+
+arrayW  WORD  1000h,2000h,3000h
+
+arrayD  DWORD 1,2,3,4
+
+myArray WORD 10 dup (?) ;create array of size 10 that is unintialized
+
+
+.code
+
+mov al,arrayB+1		; AL = 20h
+
+mov al,[arrayB+1]	; alternative notation, tbdl
+
+mov ax,[arrayW+2]		; AX = 2000h
+
+mov ax,[arrayW+4]		; AX = 3000h
+
+mov eax,[arrayD+4]		; EAX = 00000002h
+----------------------------------------------------
+.code
+	
+mov al,valB	; AL = -1
+
+neg al		; AL = +1
+-------------------------------------------------------
+Zero flag – set when destination equals zero
+
+Sign flag – set when destination is negative
+
+Carry flag – set when unsigned value is out of range (unsigned overflow)
+
+Overflow flag – set when signed value is out of range, positive or negative
+
+Flags are only set during addition or subtraction:
+zf = if all bits are 0
+pf = parity flag = if even number of 1 bites 
+
+e.g.
+0000 0011
+
+cf = if overflow
+
+e.g.
+if aL register:
+1111 1111
+
+and you add 1
+
+1 0000 0000 (this is an overflow and a carry)
+-------------------------------------------------------
+operands = variables = registers,myVar,integers,constants
+------------------------------------------
+COMMENT !
+this is a comnent
+!
+
+COMMENT & 
+this is a comment
+&
+------------------------------------------
+Loop
+->uses ecx or cx register as counter
+->if no value is assigned then it outputs once
+
+main proc
+
+mov ecx, 5 ;print 5 times, make sure its outside the loop label
+	   ;inc will cause infinite loop as well
+
+top:
+
+;some code here
+
+loop top
+----------------------------------------------
+JUMPING:
+
+.code
+
+mov ax,100
+mov bx,100
+cmp ax,bx
+je go_here ;if ax = bx go to go_here
+
+go_here:
+move ax,1
+-----------------------------------------------
+compare:
+CMP
+
+->use only with conditional jumps jc,jnc,jz,jnz
+->CMP subtracts two values to do test
+
+CMP ax,5 ;subtract ax by 5, then use flags for conditions
+
+jz go_here ;if ax = 5, jump to go_here, if zero flag is set
+jnz go_here ;if ax != 5 jump to go_here, if zero flag is not set
+jc go_here ;if ax < 5, carry flag is set
+jnc go_here ;if carry flag is not set
+-----------------------------------------------
+Equality jumping:
+->these dont use the flags
+
+JE - jump if equal, similar to jz
+JNE - jump if not equal
+JCXZ - jump if cx = 0
+------------------------------------------------
+LOOPZ:
+->same as loop but ecx or cx > 0 and ZF = 1
+->ZF is the zero flag
+
+LOOPE:
+->same as LOOPZ
+------------------------------------------------
+AND
+->compares each bit of a value
+->must be same size
+->TEST works the same way as AND
+
+mov ah, 000000001b
+mov bh, 000000101b
+ ;result is 00000001b
+
+AND ah,bh ;result is 1 which is common on both
+-------------------------------------------------
+NOT
+
+->converts 00001 to 11110
+
+e.g.
+mov ah, 00001b
+not ah
+-----------------------------------------------------
+Questions:
+
+when are flags set?
+-using add and sub
+-using cmp
+------------------------------------------------------
+EAX = AX + (AH + AL)
+Ax = AH + AL
+AX = 0000 0000 0000 0000
+---------------------------
+XOR means exclusive OR, so only or conditions is valid
+if x = 1 and y = 1 => this is false
+--------------------------------------------------
+All data types larger than a byte are stored in reverse
+order, hence Little endian.
+
+so if:
+val1 DWORD 12345678h 
+
+then stored as 
+
+Address|Value
+0000	 78
+0001	 56
+0002	 34
+0004	 12
+
+IF a byte or smaller it is stored regularly in big endian:
+
+.data
+var1 BYTE "ABC"
+
+Address|Value
+0000	 A
+0001	 B
+0002	 C
+
+NOTE:
+Memory is stored in bytes (8 bits), thats why there
+are a pair of values 78 that is stored in address 0000
+------------------------------------------------------
+NOTE:
+MEMORY is stored in little endian order if the value
+is > then a byte, however, variables are stored in original
+format.
+
+e.g.
+AX = 5401h
+
+in memory
+0000 01
+0001 54
+-----------------------------------------------
+Type casting with PTR:
+
+.data 
+myDouble DWORD 12345678h
+
+.code
+
+mov ax,myDouble 
+;doesn't work since ax is 16 bits and variable is 32
+
+mov ax, WORD PTR myDouble
+--------------------------------------------------
+"Y" = 0059h
+
+7 = 0000 0111 => -7 => 1111 1000 + 1 => 1111 1001 => F9h
+-7 is stored with an additional FFH
+so -7 = FFF9h
+
+'F' = 46h
+-------------------------------
+read user string input:
+
+.data
+mySTR BYTE 128 ?
+
+.code
+mov edx,OFFSET mySTR
+move ecx, SIZEOF mySTR-1
+
+call ReadString 
+--------------------------------

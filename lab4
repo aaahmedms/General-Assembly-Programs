@@ -1,0 +1,78 @@
+
+INCLUDE Irvine32.inc
+
+.data
+
+;1
+myArray DWORD 1,2,3,4,5,6,7,8 ;32 bits/4 bytes, here
+myArraySize = ($ - myArray)
+prompt BYTE "The number of elements in the array: ",0
+prompt2 BYTE "The size of the array in BYTES: ",0
+prompt3 BYTE "The location (OFFSET) of the first element in the array; ",0
+prompt4 BYTE "The sum of alternate elements: ",0
+blank_space BYTE " ",0
+pluus BYTE "+",0
+eqol BYTE " = ",0
+mySum WORD 0
+
+.code
+main PROC
+	
+	;2
+	mov edx, OFFSET prompt
+	call WriteString
+	mov eax, LENGTHOF myArray ;here
+	call WriteDec
+
+	call crlf
+
+	;3
+	mov edx, OFFSET prompt2
+	call WriteString
+	mov eax, SIZEOF myArray ;here
+	;or use mov eax, myArraySize
+	call WriteDec
+
+	call crlf
+
+	;4
+	mov edx, OFFSET prompt3
+	call WriteString
+	mov edx, OFFSET myArray ;automatically stores starting offset, here
+
+	call crlf
+	call dumpregs ;show result in edx register
+
+    ;5
+	mov edx, OFFSET prompt4
+	call WriteString
+	
+	;input blank space and start looping through array
+	mov ebx,0
+	mov mySum,0
+
+	L1:
+		mov eax,[myArray+ebx]
+		mov cx,WORD PTR [myArray+ebx]
+		add mySum, cx	;6 add alternate values to mySum,here
+		call WriteDec
+				add ebx,8
+		cmp ebx,SIZEOF myArray
+		jge exit_loop
+		mov edx, OFFSET pluus
+		call WriteString	
+		JMP L1
+
+	exit_loop:
+
+	;6
+	mov edx, OFFSET eqol
+	call WriteString
+	mov ax, mySum
+	call WriteDec
+
+	call crlf
+	call dumpregs
+	exit
+main ENDP
+END main

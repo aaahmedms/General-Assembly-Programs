@@ -1,0 +1,58 @@
+; This program reverses a string.
+
+
+INCLUDE Irvine32.inc
+
+.data
+prompt BYTE "Input last name: ",0
+lastName BYTE 50 DUP(0)
+prompt2 BYTE "Result: ",0
+strSize DWORD ?
+
+.code
+main PROC
+
+	;Display prompt
+	mov  edx,OFFSET prompt	
+	call WriteString
+	call crlf
+	
+	;User input is read
+	mov edx, OFFSET lastName
+	mov ecx, (SIZEOF lastName) - 1
+	call ReadString	
+	mov strSize, eax
+	
+	; Push the name on the stack.
+	mov ecx,strSize
+	mov esi,0
+	L1:	
+		movzx eax,lastName[esi]	;move character to eax register so we can push it on the stack
+		sub al,20h ;convert to uppercase
+		push eax	
+		inc esi
+		Loop L1
+
+	;Name is popped from stack in reverse order and capital form, then stored in another array which is printed on screen
+		mov ecx,strSize
+		mov esi,0
+
+	L2:	
+		;conver to upper case
+		pop eax	  ;grab the character popped from the stack
+		mov lastName[esi],al	 ; store it in a string
+		inc esi
+		Loop L2
+
+	mov  edx,OFFSET prompt2
+	call WriteString
+	call crlf
+
+	;output last name in reverse order and capital
+		mov edx,OFFSET lastName
+		call Writestring
+		call Crlf
+		call DumpRegs
+	exit
+main ENDP
+END main

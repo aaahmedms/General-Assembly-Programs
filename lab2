@@ -1,0 +1,49 @@
+; AddTwo.asm - adds two 32-bit integers.
+; Chapter 3 example
+
+Include Irvine32.inc
+
+.data
+myArray WORD 1,2,3	;1
+myByte1 BYTE "A" ;4
+myArray2 DWORD  5 DUP(-1) ;6
+
+
+
+.code
+main proc
+	
+
+	myArraySize = SIZEOF myArray ;2
+	mov ecx, LENGTHOF myArray ;3
+
+	mov eax,myArraySize ;show array size in bytes
+
+	call DumpRegs				
+
+
+	;5 convert to lower case using chart
+	mov edx, OFFSET myByte1
+	CALL writeString ;print out letter
+	mov al,myByte1
+	add al,20h ;converts to uppercase 
+	mov myByte1,al 
+	CALL WriteString
+	myByte2 = myByte1 ; 5 store result in variable after conversion
+	mov al,myByte2 ;print myByte2 to show that its storing myByte1 
+	CALL WriteString
+
+	;7
+	mov eax,123456h
+	Xchg eax,[myArray2+8] ;copy first value into EAX and exchange it with the value in third position 2^n
+	mov eax,[myArray2+8] ;show 3rd value in array by storing it in EAX register then dumping the register
+	call DumpRegs
+	
+	;8
+	mov bx, WORD PTR [myArray2+8]+1
+	call DumpRegs
+
+
+	invoke ExitProcess,0
+main endp
+end main

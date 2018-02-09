@@ -1,0 +1,82 @@
+INCLUDE Irvine32.inc
+
+.data
+
+;1
+myArray DWORD ?
+prompt BYTE "Randomly Generated Number: ",0
+prompt2 BYTE "---==Dump of the memory contents==---",0
+prompt3   BYTE "In Hexadecimal Format:",0
+
+blank_space BYTE " ",0
+numa DWORD ? 
+N DWORD ?
+
+mySum WORD 0
+
+.code
+main PROC
+	
+	;2
+	mov edx, OFFSET prompt
+	call WriteString
+    
+	mov ecx,10	; loop counter
+
+;1.Randomly generate a positive integer n (2<= n <=5).
+	call Randomize
+
+	mov eax,4     ;range 0 - 5 inclusive
+	call RandomRange 
+	add  eax,2      ;range now becomes 2 to 5 inclusive
+
+	call WriteInt
+	mov N,eax
+	call crlf
+
+;2.store values in array
+	mov ecx,eax;
+	mov ebx,0
+	L1:
+		;read number
+		mov	 edx,numa 
+		call ReadInt
+		mov [myArray+ebx],eax
+		add ebx,4
+	Loop L1
+
+	call crlf 
+
+	; display each integer on a separate line in hexadecimal format
+	mov  edx,OFFSET prompt3	  ; display message
+	call WriteString
+	call Crlf	
+
+	mov ecx,N;
+	mov ebx,0
+	L2:
+		mov eax,[myArray+ebx]
+		add ebx,4
+		call WriteHex
+		call crlf 
+	Loop L2
+
+	
+	
+;3.Use DumpMem function to display the contents of the corresponding memory locations
+	call Crlf	
+
+	mov  edx,OFFSET prompt2	 
+	call WriteString
+	call Crlf				
+
+	mov  esi,OFFSET myArray	  ; starting OFFSET
+	mov  ecx,N 
+	mov  ebx,TYPE myArray		
+	call DumpMem			  ; show memory
+
+	call crlf
+
+	exit
+main ENDP
+END main

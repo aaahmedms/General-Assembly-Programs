@@ -1,0 +1,78 @@
+TITLE Multiplication using shift and add (lab8.asm)
+
+COMMENT !
+
+	03B2h = 0000 0011 1011 0010b
+
+	 0000 0011 1011 0010 x 8 => 2^3 = shift 3 times
+	=>0001 1101 1001 0000 (after shifting 3 times)
+
+	 0000 0011 1011 0010 x 4 => 2^2 = shit 2 times
+	=>0000 1110 1100 1000 (after shifting 2 times)
+
+	add both of them together:
+	   11 1111
+	 0001 1101 1001 0000
+	+0000 1110 1100 1000
+	---------------------
+	=0010 1100 0101 1000
+	=2C58
+!
+
+INCLUDE Irvine32.inc
+
+.data
+msg BYTE "Result: ",0
+
+.code
+
+main PROC
+
+;Problem 1
+	mov ebx,0
+	mov eax,0
+	mov bx, 03B2h	;Since 12 isnt within 2^n, we need two values that have to be added
+	mov ax, bx
+
+	call dumpregs 	
+
+	;we want to multiply by 12, so first decompose 12 to 2^n = 8 + 4 = 2^2 + 2^2
+
+	shl ax, 3	; shift left 3 times in ax. (2^3 = 8) to get 8*ax
+
+	shl bx, 2	; shift left 2 times for bx. (2^2 = 4) to get 4*bx
+			
+	add ax, bx	;we then add the values to get final result
+	
+	call dumpregs
+
+	 mov edx, OFFSET msg         
+     call WriteString
+
+	call WriteHex
+	call CRLF
+	call CRLF
+
+;Problem 2
+mov eax,5627h
+mov ebx,4433h
+mov ecx,ebx
+
+;SHLD destination, source, count
+
+COMMENT !
+;ah in bl
+shld bx,bx,8
+shld bx,ax,8
+!
+
+;most significant in ah into least significant in bh
+shld bx,bx,12
+shld bx,ax,4
+
+
+call dumpregs
+
+	exit
+main ENDP
+END main

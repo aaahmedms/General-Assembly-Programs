@@ -1,7 +1,4 @@
 COMMENT !
-	NAME: Muhaimen Ahmed
-	ID: 103997335 	
-
 	Problems 1,2,3 are completed below.
 	Problem 4 is incomplete so it has been commented out.
 !

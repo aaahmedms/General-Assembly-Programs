@@ -1,7 +1,4 @@
 COMMENT !
-	NAME: Muhaimen Ahmed
-	ID: 103997335 
-	
 	A program that takes in a decimal value inputted by the user, and converts it to
 	a hexadecimal number using a set of procedures that call back to the previous procedure
 	to print the value.
